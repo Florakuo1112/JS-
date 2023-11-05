@@ -155,7 +155,7 @@ addTicket.addEventListener("click",function(e){
 
     if(ticketName.value == ""){
         alert("請輸入套票名稱")
-        
+        return
     }else{
         obj.name = ticketName.value;
     };
