@@ -1,82 +1,62 @@
-let data = [
-    {
-      "id": 0,
-      "name": "肥宅心碎賞櫻3日",
-      "imgUrl": "https://images.unsplash.com/photo-1522383225653-ed111181a951?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1655&q=80",
-      "area": "高雄",
-      "description": "賞櫻花最佳去處。肥宅不得不去的超讚景點！",
-      "group": 87,
-      "price": 1400,
-      "rate": 10
-    },
-    {
-      "id": 1,
-      "name": "貓空纜車雙程票",
-      "imgUrl": "https://images.unsplash.com/photo-1501393152198-34b240415948?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1650&q=80",
-      "area": "台北",
-      "description": "乘坐以透明強化玻璃為地板的「貓纜之眼」水晶車廂，享受騰雲駕霧遨遊天際之感",
-      "group": 99,
-      "price": 240,
-      "rate": 2
-    },
-    {
-      "id": 2,
-      "name": "台中谷關溫泉會1日",
-      "imgUrl": "https://images.unsplash.com/photo-1535530992830-e25d07cfa780?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1650&q=80",
-      "area": "台中",
-      "description": "全館客房均提供谷關無色無味之優質碳酸原湯，並取用八仙山之山冷泉供蒞臨貴賓沐浴及飲水使用。",
-      "group": 20,
-      "price": 1765,
-      "rate": 7
-    }
-  ];
 
 
+let data = [];
+axios.get("https://raw.githubusercontent.com/hexschool/js-training/main/travelApi.json").then(function(response){
+  let getData = response.data.data;
+  getData.forEach(function(item){
+    data.push(item)
+  });
+//get資料後才能渲染資料
+render(data)
+  });
 
-//預設
+//DOM:預設的ticket area
 const ticketCardArea = document.querySelector(".ticketCard-area");
 
-function init(){
-    let str = "";
-    data.forEach(function(item, index){
-        let contentText = `
-        <li class="ticketCard">
-    <div class="ticketCard-img">
-    <a href="#">
-    <img src=${item.imgUrl} alt="">
-    </a>
-    <div class="ticketCard-region">${item.area}</div>
-    <div class="ticketCard-rank">10</div>
-    </div>
-    <div class="ticketCard-content">
-    <div>
-    <h3>
-      <a href="#" class="ticketCard-name">${item.name}</a>
-    </h3>
-    <p class="ticketCard-description">
-      ${item.description}
-    </p>
-    </div>
-    <div class="ticketCard-info">
-    <p class="ticketCard-num">
-      <span><i class="fas fa-exclamation-circle"></i></span>
-      剩下最後 <span id="ticketCard-num"> ${item.group} </span> 組
-    </p>
-    <p class="ticketCard-price">
-      TWD <span id="ticketCard-price">${item.price}</span>
-    </p>
-    </div>
-    </div>
-    </li>` 
-        str += contentText
-        
-    })
-  
-    ticketCardArea .innerHTML = str
-  
+
+
+function render(data){
+  let str = "";
+  data.forEach(function(item, index){
+      let contentText = `
+      <li class="ticketCard">
+  <div class="ticketCard-img">
+  <a href="#">
+  <img src=${item.imgUrl} alt="">
+  </a>
+  <div class="ticketCard-region">${item.area}</div>
+  <div class="ticketCard-rank">10</div>
+  </div>
+  <div class="ticketCard-content">
+  <div>
+  <h3>
+    <a href="#" class="ticketCard-name">${item.name}</a>
+  </h3>
+  <p class="ticketCard-description">
+    ${item.description}
+  </p>
+  </div>
+  <div class="ticketCard-info">
+  <p class="ticketCard-num">
+    <span><i class="fas fa-exclamation-circle"></i></span>
+    剩下最後 <span id="ticketCard-num"> ${item.group} </span> 組
+  </p>
+  <p class="ticketCard-price">
+    TWD <span id="ticketCard-price">${item.price}</span>
+  </p>
+  </div>
+  </div>
+  </li>` 
+      str += contentText
+      
+  })
+
+  ticketCardArea .innerHTML = str;
+  searchResult.textContent = `本次搜尋共${data.length}筆資料`
 }
 
-init()
+
+
 
 //level 3
 //篩選功能
@@ -85,116 +65,118 @@ const regionSearch = document.querySelector(".regionSearch");
 const searchResult = document.querySelector("#searchResult-text");
 
 
+
 regionSearch.addEventListener("change", function(e){
-if(e.target.value == ""){
-
-    searchResult.textContent = `本次搜尋共${data.length}筆資料`
-    return init()
+ 
+if(e.target.value === ""){
+   //searchResult.textContent = `本次搜尋共${data.length}筆資料` 已把這段加入 init()
+     render(data);
+     return
 }
-
-let str ="";
-let resultNum = 0;
-data.forEach(function(item, index){
-    if(e.target.value == item.area){
-        resultNum +=1;
-        let content = `
-            <li class="ticketCard">
-    <div class="ticketCard-img">
-      <a href="#">
-        <img src=${item.imgUrl} alt="">
-      </a>
-      <div class="ticketCard-region">${item.area}</div>
-      <div class="ticketCard-rank">10</div>
-    </div>
-    <div class="ticketCard-content">
-      <div>
-        <h3>
-          <a href="#" class="ticketCard-name">${item.name}</a>
-        </h3>
-        <p class="ticketCard-description">
-          ${item.description}
-        </p>
-      </div>
-      <div class="ticketCard-info">
-        <p class="ticketCard-num">
-          <span><i class="fas fa-exclamation-circle"></i></span>
-          剩下最後 <span id="ticketCard-num"> ${item.group} </span> 組
-        </p>
-        <p class="ticketCard-price">
-          TWD <span id="ticketCard-price">${item.price}</span>
-        </p>
-      </div>
-    </div>
-        </li>`
-  
-        str += content;
-
-        
-        
-    }
-})
-searchResult.textContent = `本次搜尋共${resultNum }筆資料`
-ticketCardArea .innerHTML = str;
-
-})
+let filterData = [];
+let clickItem = e.target.value;
+   data.forEach(function(item){
+     if(item.area === clickItem){
+       console.log(item.area);
+       filterData.push(item)
+     }
+   });
+   render(filterData)
+}
+)
  
 //增加票券功能
+
+//DOM新增旅遊套票的input區域
 const ticketName = document.querySelector("#ticketName");
 const ticketImgUrl = document.querySelector("#ticketImgUrl");
 const ticketRegion = document.querySelector("#ticketRegion");
 const ticketPrice = document.querySelector("#ticketPrice");
 const ticketNum = document.querySelector("#ticketNum");
-const ticketRate = document.querySelectorAll("#ticketRate");
+const ticketRate = document.querySelector('#ticketRate');
 const ticketDescription = document.querySelector("#ticketDescription");  
 const addTicket = document.querySelector(".addTicket-btn");
-const mandatory = document.querySelector(".madatory");
+
+//DOM:message 的區域
+const ticketName_message = document.querySelector("#ticketName-message");
+const ticketImgUrl＿message = document.querySelector("#ticketImgUrl-message");
+const ticketRegion_message = document.querySelector("#ticketRegion-message");
+const ticketPrice_message = document.querySelector("#ticketPrice-message");
+const ticketNum_message = document.querySelector("#ticketNum-message");
+const ticketRate_message= document.querySelector("#ticketRate-message");
+const desRequired = document.querySelector(".desRequired");
+const addTicketform = document.querySelector(".addTicket-form")
+
+
+function requiredRender(input){
+  input.innerHTML =`<i class="fas fa-exclamation-circle"></i>
+  <span>必填</span>`
+};
+
+
 
 addTicket.addEventListener("click",function(e){
     let obj = {};
     obj.id = data.length+1
-
-    if(ticketName.value == ""){
-        alert("請輸入套票名稱")
-        return
+    //套票名稱
+    if(ticketName.value === ""){
+      requiredRender(ticketName_message);
+  //return;
     }else{
         obj.name = ticketName.value;
     };
-
-    if(ticketImgUrl.value == ""){
-        alert("請輸入圖片網址")
-        return
+    //圖片網址
+    if(ticketImgUrl.value === ""){
+      requiredRender(ticketImgUrl＿message);
+    // return;
     }else{
-        obj.imgUrl = ticketImgUrl.value;
+      obj.imgUrl=ticketImgUrl.value;
+    };
+    //景點地區
+    if(ticketRegion.value === ""){
+      requiredRender(ticketRegion_message);
+     // return;
+    }else{
+      obj.area = ticketRegion.value;
+    };
+    //套票金額
+    if(ticketPrice.value === ""){
+      requiredRender(ticketPrice_message);
+    // return;
+    }else{
+      obj.price = ticketPrice.value;
+    };
+    //套票組數
+    if(ticketNum.value === ""){
+      requiredRender(ticketNum_message);
+    //  return;
+    }else{
+      obj.group = ticketNum.value;
+    };
+    //套票星級
+    if(ticketRate.value === ""){
+      requiredRender(ticketRate_message);
+     // return
+    }else{
+      obj.rate = ticketRate.value;
+    };
+    //套票描述
+    if(ticketDescription.value === ""){
+      requiredRender(desRequired);
+      return;
+    }else{
+      obj.description = ticketDescription.value;
     };
 
-    if(ticketRegion.value ==""){
-        alert("請輸入景點地區")
-        return
-    }else{
-        obj.area = ticketRegion.value;
-    };
-    if(ticketPrice.value == ""){
-        alert("請輸入套票金額")
-        return
-    }else{
-        obj.price = ticketPrice.value
-    };
-    if(ticketNum.value == ""){
-        alert("請輸入套票組數")
-        return
-    }else{
-        obj.group = ticketNum.value;
-    };
-    if(ticketDescription.value ==""){
-        alert("請輸入套票描述")
-        return
-    }else{
-        obj.description = ticketDescription.value;
-    };
     console.log(obj);
     data.push(obj);
-    init()
+    addTicketform.reset();
+    render(data);
+    //
+    
     })
+
+   
 
   
 
