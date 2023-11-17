@@ -6,6 +6,7 @@ axios.get("https://raw.githubusercontent.com/hexschool/js-training/main/travelAp
   getData.forEach(function(item){
     data.push(item)
   });
+
 //get資料後才能渲染資料
 render(data)
   });
@@ -71,14 +72,16 @@ regionSearch.addEventListener("change", function(e){
 if(e.target.value === ""){
    //searchResult.textContent = `本次搜尋共${data.length}筆資料` 已把這段加入 init()
      render(data);
+     console.log(regionSearch.value)
      return
 }
 let filterData = [];
 let clickItem = e.target.value;
    data.forEach(function(item){
      if(item.area === clickItem){
-       console.log(item.area);
-       filterData.push(item)
+       console.log(`收尋${item.area}`);
+       filterData.push(item);
+       console.log(`${regionSearch.value}的資訊`);
      }
    });
    render(filterData)
@@ -108,73 +111,102 @@ const desRequired = document.querySelector(".desRequired");
 const addTicketform = document.querySelector(".addTicket-form")
 
 
+
+//render必填紅字的function
 function requiredRender(input){
   input.innerHTML =`<i class="fas fa-exclamation-circle"></i>
   <span>必填</span>`
 };
+//不用紅字了
+function noRequire(input){
+  input.innerHTML = ``
+}
+
 
 
 
 addTicket.addEventListener("click",function(e){
-    let obj = {};
-    obj.id = data.length+1
-    //套票名稱
-    if(ticketName.value === ""){
-      requiredRender(ticketName_message);
-  //return;
-    }else{
-        obj.name = ticketName.value;
-    };
-    //圖片網址
-    if(ticketImgUrl.value === ""){
-      requiredRender(ticketImgUrl＿message);
-    // return;
-    }else{
-      obj.imgUrl=ticketImgUrl.value;
-    };
-    //景點地區
-    if(ticketRegion.value === ""){
-      requiredRender(ticketRegion_message);
-     // return;
-    }else{
-      obj.area = ticketRegion.value;
-    };
-    //套票金額
-    if(ticketPrice.value === ""){
-      requiredRender(ticketPrice_message);
-    // return;
-    }else{
-      obj.price = ticketPrice.value;
-    };
-    //套票組數
-    if(ticketNum.value === ""){
-      requiredRender(ticketNum_message);
-    //  return;
-    }else{
-      obj.group = ticketNum.value;
-    };
-    //套票星級
-    if(ticketRate.value === ""){
-      requiredRender(ticketRate_message);
-     // return
-    }else{
-      obj.rate = ticketRate.value;
-    };
-    //套票描述
-    if(ticketDescription.value === ""){
-      requiredRender(desRequired);
-      return;
-    }else{
-      obj.description = ticketDescription.value;
-    };
+  let obj = {};
+  
 
-    console.log(obj);
-    data.push(obj);
-    addTicketform.reset();
-    render(data);
-    //
-    
-    })
+//先確認有沒有未填寫的input item, 如果有 missInputItem +=1;
+let inputItem = [ticketName, ticketImgUrl, ticketRegion, ticketPrice, ticketNum, ticketRate, ticketDescription];
+let missInputItem = 0;
+
+inputItem.forEach(function(item){
+  if(item.value === ""){
+    missInputItem += 1;
+  }
+});
+
+console.log(`有${missInputItem}項inputItem沒有填寫`);
+
+if(missInputItem > 0){
+  //如果有未填寫的inputItem, 單純做頁面上的渲染
+  //套票名稱
+  if(ticketName.value === ""){
+    requiredRender(ticketName_message);
+  }else{
+     noRequire(ticketName_message)
+  };
+  //圖片網址
+  if(ticketImgUrl.value === ""){
+    requiredRender(ticketImgUrl＿message);
+  }else{
+    noRequire(ticketImgUrl＿message)
+  };
+  //景點地區
+  if(ticketRegion.value === ""){
+    requiredRender(ticketRegion_message);
+  }else{
+    noRequire(ticketRegion_message)
+  };
+  //套票金額
+  if(ticketPrice.value === ""){
+    requiredRender(ticketPrice_message);
+  }else{
+    noRequire(ticketPrice_message)
+  };
+  //套票組數
+  if(ticketNum.value === ""){
+    requiredRender(ticketNum_message);
+  }else{
+    noRequire(ticketNum_message)
+  };
+  //套票星級
+  if(ticketRate.value === ""){
+    requiredRender(ticketRate_message);
+  }else{
+    noRequire(ticketRate_message)
+  };
+  //套票描述
+  if(ticketDescription.value === ""){
+    requiredRender(desRequired);
+  }else{
+    noRequire(desRequired)
+  };
+
+  //都填寫了，跑以下程式碼
+} else{
+  //選單回到全部地區
+  regionSearch.value = "" 
+  console.log("all sets");
+  obj.id = data.length+1
+  obj.name = ticketName.value;
+  obj.imgUrl=ticketImgUrl.value;
+  obj.area = ticketRegion.value;
+  obj.price = ticketPrice.value;
+  obj.group = ticketNum.value;
+  obj.rate = ticketRate.value;
+  obj.description = ticketDescription.value;
+  data.push(obj);
+  console.log(obj)
+  console.log(regionSearch.value);
+  render(data);
+  addTicketform.reset();
+}
+
+})
 
    
 
