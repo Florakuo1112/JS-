@@ -188,9 +188,18 @@ if(missInputItem > 0){
 
   //都填寫了，跑以下程式碼
 } else{
+  //把必填紅字給拿掉，如果不加以下程式碼會造成原本出現的必填紅字在新增成功後還是會留在頁面上
+  noRequire(ticketName_message);
+  noRequire(ticketImgUrl＿message);
+  noRequire(ticketRegion_message);
+  noRequire(ticketPrice_message);
+  noRequire(ticketNum_message);
+  noRequire(ticketRate_message);
+  noRequire(desRequired);
   //選單回到全部地區
   regionSearch.value = "" 
   console.log("all sets");
+  //push 到data
   obj.id = data.length+1
   obj.name = ticketName.value;
   obj.imgUrl=ticketImgUrl.value;
