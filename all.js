@@ -1,5 +1,3 @@
-
-
 //DOM:預設的ticket area
 const ticketCardArea = document.querySelector(".ticketCard-area");
 //篩選功能
@@ -14,7 +12,6 @@ const ticketNum = document.querySelector("#ticketNum");
 const ticketRate = document.querySelector('#ticketRate');
 const ticketDescription = document.querySelector("#ticketDescription");  
 const addTicket = document.querySelector(".addTicket-btn");
-
 //DOM:message 的區域
 const ticketName_message = document.querySelector("#ticketName-message");
 const ticketImgUrl＿message = document.querySelector("#ticketImgUrl-message");
@@ -23,40 +20,44 @@ const ticketPrice_message = document.querySelector("#ticketPrice-message");
 const ticketNum_message = document.querySelector("#ticketNum-message");
 const ticketRate_message= document.querySelector("#ticketRate-message");
 const desRequired = document.querySelector(".desRequired");
-const addTicketform = document.querySelector(".addTicket-form")
+const addTicketform = document.querySelector(".addTicket-form");
+//查無此關鍵字資料
+const cantFindArea = document.querySelector(".cantFind-area");
 
 
 
-
-
+let totalData = {};
 
 axios.get("https://raw.githubusercontent.com/hexschool/js-training/main/travelApi.json").then(function(response){
-  let data = response.data.data;
+   let data = response.data.data;
   render(data);//get資料後才能渲染資料 放在then後面才能取得資料後再渲染
-
+  console.log(data)
   //第七週主線任務
 donuteChart()
 
 function donuteChart(){
-  let total = {};
-  data.forEach(function(item){
-    if(total[item.area] === undefined){
-      total[item.area] = 1
-    }else{
-      total[item.area] += 1};
-     
-  });
-  console.log(total)
- 
-  let areaAry = Object.keys(total); //取total的屬性變成陣列;
-  let newData = [];
-  areaAry.forEach(function(item){
-    let ary = [];
-    ary.push(item);
-    ary.push(total[item]);
-    newData.push(ary);
-  });
-  console.log(newData);
+
+    data.forEach(function(item){
+      if(totalData[item.area] === undefined){
+        totalData[item.area] = 1
+      }else{
+        totalData[item.area] += 1};
+    });
+  //上課的教法
+  // let areaAry = Object.keys(total); //取total的屬性變成陣列;
+  // let newData = [];
+  // areaAry.forEach(function(item){
+  //   let ary = [];
+  //   ary.push(item);
+  //   ary.push(total[item]);
+  //   newData.push(ary);
+  // });
+  // console.log(newData);
+
+  //助教建議寫法 Object.entries 可以把物件變成陣列
+  console.log(Object.entries(totalData));
+  let newData = Object.entries(totalData);
+  console.log(newData)
 
   var chart = c3.generate({
     data: {
@@ -73,30 +74,30 @@ function donuteChart(){
     },
     donut: {
         title: "套票地區比重",
-        width:10
+        width:15,
+        label:{
+          show:false
+        }
         
     }
   });
   
- }
-
-
-console.log(data)
-
-
+ };
 
 
 
 //level 3
 regionSearch.addEventListener("change", function(e){
-  if(e.target.value === ""){
+  let clickItem = e.target.value;
+//如果按到的option是“”
+  if(clickItem === ""){
      //searchResult.textContent = `本次搜尋共${data.length}筆資料` 已把這段加入 init()
        render(data);
        console.log(regionSearch.value)
        return
-  }
+  };
+//其他
   let filterData = [];
-  let clickItem = e.target.value;
      data.forEach(function(item){
        if(item.area === clickItem){
          console.log(`收尋${item.area}`);
@@ -104,7 +105,8 @@ regionSearch.addEventListener("change", function(e){
          console.log(`${regionSearch.value}的資訊`);
        }
      });
-     render(filterData)
+    render(filterData);
+
   }
   );
 
@@ -210,6 +212,16 @@ if(missInputItem > 0){
 
 //function()區域
 function render(data){
+
+  console.log(data.length)
+
+  if(data.length == 0){
+   cantFindArea.innerHTML=`<h3>查無此關鍵字資料</h3>
+   <img src="https://github.com/hexschool/2022-web-layout-training/blob/main/js_week5/no_found.png?raw=true" alt="">`;
+  }else{
+  cantFindArea.innerHTML=""
+  };
+
   let str = "";
   data.forEach(function(item, index){
       let contentText = `
@@ -246,8 +258,11 @@ function render(data){
   })
 
   ticketCardArea .innerHTML = str;
+
   searchResult.textContent = `本次搜尋共${data.length}筆資料`
-}
+};
+
+
 
 
 //render必填紅字的function
@@ -258,7 +273,7 @@ function requiredRender(input){
 //不用紅字了
 function noRequire(input){
   input.innerHTML = ``
-}
+};
 
 
 
