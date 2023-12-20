@@ -3,26 +3,28 @@ const ticketCardArea = document.querySelector(".ticketCard-area");
 //篩選功能
 const regionSearch = document.querySelector(".regionSearch");
 const searchResult = document.querySelector("#searchResult-text");
-//DOM新增旅遊套票的input區域
-const ticketName = document.querySelector("#ticketName");
-const ticketImgUrl = document.querySelector("#ticketImgUrl");
-const ticketRegion = document.querySelector("#ticketRegion");
-const ticketPrice = document.querySelector("#ticketPrice");
-const ticketNum = document.querySelector("#ticketNum");
-const ticketRate = document.querySelector('#ticketRate');
-const ticketDescription = document.querySelector("#ticketDescription");  
-const addTicket = document.querySelector(".addTicket-btn");
-//DOM:message 的區域
-const ticketName_message = document.querySelector("#ticketName-message");
-const ticketImgUrl＿message = document.querySelector("#ticketImgUrl-message");
-const ticketRegion_message = document.querySelector("#ticketRegion-message");
-const ticketPrice_message = document.querySelector("#ticketPrice-message");
-const ticketNum_message = document.querySelector("#ticketNum-message");
-const ticketRate_message= document.querySelector("#ticketRate-message");
-const desRequired = document.querySelector(".desRequired");
+
+//DOM新增旅遊套票的input區域 //以下方式用validate.js不需要
+// const ticketName = document.querySelector("#ticketName");
+// const ticketImgUrl = document.querySelector("#ticketImgUrl");
+// const ticketRegion = document.querySelector("#ticketRegion");
+// const ticketPrice = document.querySelector("#ticketPrice");
+// const ticketNum = document.querySelector("#ticketNum");
+// const ticketRate = document.querySelector('#ticketRate');
+// const ticketDescription = document.querySelector("#ticketDescription");  
+ const addTicket = document.querySelector(".addTicket-btn");
+//DOM:message 的區域 //以下方式用validate.js不需要
+// const ticketName_message = document.querySelector("#ticketName-message");
+// const ticketImgUrl＿message = document.querySelector("#ticketImgUrl-message");
+// const ticketRegion_message = document.querySelector("#ticketRegion-message");
+// const ticketPrice_message = document.querySelector("#ticketPrice-message");
+// const ticketNum_message = document.querySelector("#ticketNum-message");
+// const ticketRate_message= document.querySelector("#ticketRate-message");
+// const desRequired = document.querySelector(".desRequired");
+
 //for validate.js的綁定
-const addTicketform = document.querySelector(".addTicket-form");
-const input = addTicketform.querySelectorAll('input, select, textarea');
+const addTicketform = document.querySelector(".addTicket-form"); //新增旅遊套票的大表格
+const input = addTicketform.querySelectorAll('input, select, textarea'); //會得到陣列
 
 
 
@@ -32,6 +34,10 @@ const constraints = {
       presence:{
         allowEmpty:false,
         message:"必填"
+      },
+      exclusion:{
+        within: ['國外','海外','美國'],
+        message: "不提供海外旅行"
       }
   },
   圖片網址:{
@@ -65,7 +71,17 @@ const constraints = {
       presence:{
         allowEmpty:false,
         message:"必填"
+      },
+      numericality:{
+      onlyInteger:true,
+       lessThanOrEqualTo:10,
+       message:{
+         onlyInteger:"只能是整數",
+         lessThanOrEqualTo:"不得大於10"
+       }
       }
+      ,
+      
   },
   套票描述:{
       presence:{
@@ -74,7 +90,7 @@ const constraints = {
       },
       length:{
         is:5,
-        message: `字數等於5`
+        message: `字數要等於5`
       }
   }
 };
@@ -177,6 +193,7 @@ addTicket.addEventListener("click",function(e){
 
   //先把alart message變成空白
   input.forEach((item)=>{
+    //因為新增套票的btn不會有資料input，只是因為input type btn所以會被querySelectorAll抓到,不需要所以return
     if(item.value == "新增套票"){
       return
     };
@@ -199,21 +216,46 @@ addTicket.addEventListener("click",function(e){
   console.log(dataToValidate);
 
 const errors = validate(dataToValidate, constraints); 
-//const errors = validate(dataToValidate, constraints, {format: 'flat' }); 
 console.log(errors);
 if(errors !== undefined){
   input.forEach((item)=>{
+    let eachNextElement = item.parentElement.nextElementSibling;
     if(errors[item.name] !== undefined){
-    console.log(errors[item.name][0].split(' '));
+    console.log(errors[item.name][0]);
+    //套票星級的numericality驗證兩個地方，會以陣列呈現
+    if(typeof(errors[item.name][0]) == 'object'){
+      console.log("這是物件");
+      if(dataToValidate['套票星級'] >= 10){
+        console.log("大於10")
+        eachNextElement.innerHTML =  
+        `<p id="ticketName-message" data-message="套票名稱">
+        <i class="fas fa-exclamation-circle"></i>
+                 <span>${errors[item.name][0].lessThanOrEqualTo}</span>
+           </p>`
+
+      }else{
+        eachNextElement.innerHTML =  
+        `<p id="ticketName-message" data-message="套票名稱">
+        <i class="fas fa-exclamation-circle"></i>
+                 <span>${errors[item.name][0].onlyInteger}</span>
+           </p>`
+      }
+     
+     
+    }
+    
+    else{
+      console.log(errors[item.name][0].split(' '));
   
-    let eachNextElement = item.parentElement.nextElementSibling
-    console.log(eachNextElement);
-    eachNextElement.innerHTML =  
-    `<p id="ticketName-message" data-message="套票名稱">
-    <i class="fas fa-exclamation-circle"></i>
-             <span>${errors[item.name][0].split(' ')[1]}</span>
-       </p>`
-    //
+   
+      console.log(eachNextElement);
+      eachNextElement.innerHTML =  
+      `<p id="ticketName-message" data-message="套票名稱">
+      <i class="fas fa-exclamation-circle"></i>
+               <span>${errors[item.name][0].split(' ')[1]}</span>
+         </p>`
+    }
+
     }
   })
 }else{
@@ -392,7 +434,7 @@ function render(data){
 
 
 
-
+//以下方式用validate.js不需要
 //render必填紅字的function
 function requiredRender(input){
   input.innerHTML =`<i class="fas fa-exclamation-circle"></i>
